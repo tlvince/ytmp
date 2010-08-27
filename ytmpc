@@ -1,0 +1,60 @@
+#!/bin/bash
+
+source /etc/ytmp.conf
+
+function ytplay {
+  mplayer -cache 2048 $VIDURL &
+}
+
+function ytdownload {
+  youtube-dl --max-quality=$MAXQUAL -o "$TITLE".%\(ext\)s $URL &
+}
+
+function ytdlandplay {
+#mplayer might crash if download speed < bitrate
+  ytdownload
+  while ! [ -a $TITLE* ] ; do sleep 3; done
+  mplayer $TITLE* &
+}
+
+LASTURL=""
+while(true)
+do
+  if [ -f /tmp/ytmdurls ]
+  then
+    URL=$(tail -n 1 /tmp/ytmdurls)
+    if [ "$URL" != "$LASTURL" ]
+    then
+      TITLE=$(youtube-dl -e $URL | sed -e 's/ /_/g')
+      VIDURL=$(youtube-dl --max-quality=$MAXQUAL -g $URL)
+      case $GUI in
+        "none")
+          ytplay ;;
+        "zenity")
+          case "$(zenity --list --checklist --text=$TITLE --hide-header --column "1" --column "2" TRUE "View in mplayer" FALSE "Download")" in
+            "View in mplayer")
+              ytplay ;;
+            "Download")
+              ytdownload ;;
+            "View in mplayer|Download")
+              ytdlandplay ;;
+          esac ;;
+        "kdialog")
+          INPUT="$(kdialog --checklist $TITLE 1 "View with mplayer (default)" on 2 "Download" off)" 
+          if ! [ -z "${INPUT}" ]; then
+            if [ $INPUT = "\"1\"" ]; then ytplay;
+            else
+              if [ $INPUT = "\"2\"" ]; then ytdownload;
+              else          
+                ytdlandplay
+              fi
+            fi
+          fi
+      esac
+      #kill `ps aux | grep youtube-dl | grep -v grep | awk '{print $2}'`
+    fi
+    LASTURL=$URL
+  fi
+  sleep 1
+done
+
