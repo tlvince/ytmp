@@ -8,20 +8,54 @@ else
 fi
 
 ytplay() {
-  echo "[ytmpc] Now playing: $title"
+  echo "[ytmpc] Now playing: ($host) $title"
   mplayer -cache 2048 "$vidurl" > /dev/null 2>&1
 }
 
 ytdownload() {
-  echo "[ytmpc] Now downloading: $title"
-  youtube-dl --max-quality="$MAXQUAL" -o "${DWN:-$HOME}/%(stitle)s.%(ext)s" "$url"
+  echo "[ytmpc] Now downloading: ($host) $title"
+  case $host in
+    "youtube") youtube-dl --max-quality="$MAXQUAL" -o "${DWN:-$HOME}/%(stitle)s.%(ext)s" "http://www.youtube.com/watch?v=""$id";;
+    "vimeo") wget -O "${DWN:-$HOME}/$title.flv" "$vidurl";;
+  esac
 }
 
 ytdlandplay() {
-  local log="/tmp/youtube-dl.log"
-  ytdownload | tee "$log"
-  vidurl="$(grep -F Destination "$log" | awk '{print $3}')"
+  case $host in
+    "youtube") local log="/tmp/youtube-dl.log"
+               ytdownload | tee "$log" &
+               vidurl="$(grep -F Destination "$log" | awk '{print $3}')";;
+    "vimeo") ytdownload &
+             vidurl="${DWN:-$HOME}/$title.flv" 
+  esac
+  sleep 3
+  while ! [ -f "$vidurl" ] ; do sleep 3; done
   ytplay &
+}
+
+_zenity() {
+# zenity requires ampersand characters to be escaped as &amp;
+  title=`echo $title | sed 's/\&/&amp;/g'`
+  choice=$(zenity --list --checklist --text="$title" --hide-header --column "1" \
+             --column "2" TRUE "View in mplayer" FALSE "Download")
+
+  case "$choice" in
+    "View in mplayer") ytplay &;;
+    "Download") ytdownload &;;
+    "View in mplayer|Download") ytdlandplay &;;
+  esac
+}
+
+_kdialog() {
+  choice=$(kdialog --checklist "$title" 1 "View with mplayer (default)" on \
+              2 "Download" off)
+
+  case "$choice" in
+    '"1" ') echo "yup"
+             ytplay &;;
+    '"2" ') ytdownload &;;
+    '"1" "2" ') ytdlandplay &;;
+  esac
 }
 
 _dmenu() {
@@ -34,34 +68,31 @@ _dmenu() {
   esac
 }
 
-_zenity() {
-  choice=$(zenity --list --checklist --text="$title" --hide-header --column "1" \
-             --column "2" TRUE "View in mplayer" FALSE "Download")
-
-  case "$choice" in
-    "View in mplayer") ytplay &;;
-    "Download") ytdownload &;;
-    "View in mplayer|Download") ytdlandplay &;;
-  esac
+parsevimeo() {
+# based on video-dl by Vitaly Minko
+# http://ossguy.com/?p=172
+  local video_xml=$(wget -q -O - "http://www.vimeo.com/moogaloop/load/clip:$id") 
+  local signature=$(echo $video_xml | \
+    sed -e 's/^.*<request_signature>\([^<]*\)<.*$/\1/g')
+  local signature_expires=$(echo $video_xml | \
+    sed -e 's/^.*<request_signature_expires>\([^<]*\)<.*$/\1/g')
+  title=$(echo $video_xml | \
+    sed -e 's/^.*locked> <video> <caption>\([^<]*\)<.*$/\1/')
+  vidurl="http://www.vimeo.com/moogaloop/play/clip:$id/$signature/$signature_expires/?q=sd"
 }
 
-_kdialog() {
-  choice="$(kdialog --checklist "$title" 1 "View with mplayer (default)" on \
-              2 "Download" off)"
-
-  case "$choice" in
-    "1") ytplay &;;
-    "2") ytdownload &;;
-    "1|2") ytdlandplay &;;
-  esac
-}
-lasturl=""
+lastid=""
 while(true); do
-  if [[ -f /tmp/ytmdurls ]]; then
-    url="$(tail -n 1 /tmp/ytmdurls)"
-    if [[ "$url" != "$lasturl" ]]; then
-      title="$(youtube-dl -e "$url")"
-      vidurl="$(youtube-dl --max-quality="$MAXQUAL" -g "$url")"
+  if [[ -f /tmp/ytmpurls ]]; then
+    cat /tmp/ytmpurls | tail -n 2 >> /tmp/ytmpvars
+    source /tmp/ytmpvars
+    rm /tmp/ytmpvars
+    if [[ "$id" != "$lastid" ]]; then
+      case "$host" in
+        "youtube") title="$(youtube-dl -e "http://www.youtube.com/watch?v=""$id")"
+                   vidurl="$(youtube-dl --max-quality="$MAXQUAL" -g "http://www.youtube.com/watch?v=""$id")";;
+        "vimeo") parsevimeo;; 
+      esac
       case "$GUI" in
         "none") ytplay &;;
         "zenity") _zenity;;
@@ -69,7 +100,7 @@ while(true); do
         "dmenu") _dmenu;;
       esac
     fi
-    lasturl="$url"
+    lastid="$id"
   fi
   sleep 1
 done
