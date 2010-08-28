@@ -25,7 +25,7 @@ ytdlandplay() {
 }
 
 _dmenu() {
-  choice=$(echo -e "View in mplayer\n Download" | dmenu -i)
+  choice=$(echo -e "View in mplayer\nDownload" | dmenu -i)
 
   case "$choice" in
     "View in mplayer") ytplay &;;
