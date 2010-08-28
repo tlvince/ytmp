@@ -17,6 +17,7 @@ Dependencies
 
 * `zenity`: for (GTK) GUI support
 * `kdialog`: for KDE GUI support
+* `dmenu`: for dmenu GUI support
 
   [1]: http://aur.archlinux.org/packages.php?ID=40172
   [YouTube]: http://www.youtube.com/
