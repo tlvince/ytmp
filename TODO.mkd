@@ -5,3 +5,4 @@
 * Add `dmenu` "GUI" option
     * Modularise the GUI functions while we're at it?
 * Fix delay between finding a video and client picking up the request
+* Add a play queue (download in the background)
