@@ -24,6 +24,16 @@ ytdlandplay() {
   ytplay &
 }
 
+_dmenu() {
+  choice=$(echo -e "View in mplayer\n Download" | dmenu -i)
+
+  case "$choice" in
+    "View in mplayer") ytplay &;;
+    "Download") ytdownload &;;
+    "View in mplayer|Download") ytdlandplay &;;
+  esac
+}
+
 _zenity() {
   choice=$(zenity --list --checklist --text="$title" --hide-header --column "1" \
              --column "2" TRUE "View in mplayer" FALSE "Download")
@@ -56,6 +66,7 @@ while(true); do
         "none") ytplay &;;
         "zenity") _zenity;;
         "kdialog") _kdialog;;
+        "dmenu") _dmenu;;
       esac
     fi
     lasturl="$url"
