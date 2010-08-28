@@ -7,7 +7,7 @@ arch=('any')
 url="http://github.com/tlvince/ytmp"
 license=('GPL')
 depends=('ngrep' 'youtube-dl' 'mplayer')
-optdepends=('zenity: for gtk gui support' 'kdialog: for kde gui support')
+optdepends=('zenity: for gtk gui support' 'kdialog: for kde gui support' 'dmenu: for dmenu gui support')
 makedepends=('git')
 backup=('etc/ytmp.conf')
 
