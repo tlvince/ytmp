@@ -1,6 +1,4 @@
 * Add option to download by default (rather than play)
 * Allow different quality settings for streaming/downloading
-* Reduce (kill?) polling
-    * e.g. could use `inotify` to check when the file was downloaded
 * The "client" appears to be a daemon in itself... daemonise it?
 * *stdout* is messy when there are concurrent downloads
