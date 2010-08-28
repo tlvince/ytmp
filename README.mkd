@@ -1,0 +1,20 @@
+ytmp
+====
+
+Automatically play youtube videos with `mplayer` using `ngrep`.
+
+This fork (of [ytmp v4-1][1]) aims to be more maintainable and robust for future
+extensions.
+
+Dependencies
+------------
+
+* `ngrep`
+* `youtube-dl`
+
+### Optional
+
+* `zenity`: for (GTK) GUI support
+* `kdialog`: for KDE GUI support
+
+  [1]: http://aur.archlinux.org/packages.php?ID=40172
