@@ -8,17 +8,20 @@ else
 fi
 
 ytplay() {
-  mplayer -cache 2048 "$vidurl" &
+  echo "[ytmc] Now playing: $title"
+  mplayer -cache 2048 "$vidurl" > /dev/null 2>&1
 }
 
 ytdownload() {
-  youtube-dl --max-quality="$MAXQUAL" -o "${DWN:-$HOME}/$title".%\(ext\)s "$url" &
+  echo "[ytmc] Now downloading: $title"
+  youtube-dl --max-quality="$MAXQUAL" -o "${DWN:-$HOME}/%(stitle)s.%(ext)s" "$url"
 }
 
 ytdlandplay() {
-  ytdownload
-  while ! [[ -a $title* ]]; do sleep 3; done
-  mplayer $title* &
+  local log="/tmp/youtube-dl.log"
+  ytdownload | tee "$log"
+  vidurl="$(grep -F Destination "$log" | awk '{print $3}')"
+  ytplay &
 }
 
 _zenity() {
@@ -26,23 +29,22 @@ _zenity() {
              --column "2" TRUE "View in mplayer" FALSE "Download")
 
   case "$choice" in
-    "View in mplayer") ytplay;;
-    "Download") ytdownload;;
-    "View in mplayer|Download") ytdlandplay;;
+    "View in mplayer") ytplay &;;
+    "Download") ytdownload &;;
+    "View in mplayer|Download") ytdlandplay &;;
   esac
 }
 
 _kdialog() {
   choice="$(kdialog --checklist "$title" 1 "View with mplayer (default)" on \
-             2 "Download" off)"
+              2 "Download" off)"
 
   case "$choice" in
-    "1") ytplay;;
-    "2") ytdownload;;
-    "1|2") ytdlandplay;;
+    "1") ytplay &;;
+    "2") ytdownload &;;
+    "1|2") ytdlandplay &;;
   esac
 }
-
 lasturl=""
 while(true); do
   if [[ -f /tmp/ytmdurls ]]; then
@@ -51,7 +53,7 @@ while(true); do
       title="$(youtube-dl -e "$url")"
       vidurl="$(youtube-dl --max-quality="$MAXQUAL" -g "$url")"
       case "$GUI" in
-        "none") ytplay;;
+        "none") ytplay &;;
         "zenity") _zenity;;
         "kdialog") _kdialog;;
       esac
