@@ -8,12 +8,12 @@ else
 fi
 
 ytplay() {
-  echo "[ytmc] Now playing: $title"
+  echo "[ytmpc] Now playing: $title"
   mplayer -cache 2048 "$vidurl" > /dev/null 2>&1
 }
 
 ytdownload() {
-  echo "[ytmc] Now downloading: $title"
+  echo "[ytmpc] Now downloading: $title"
   youtube-dl --max-quality="$MAXQUAL" -o "${DWN:-$HOME}/%(stitle)s.%(ext)s" "$url"
 }
 

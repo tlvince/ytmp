@@ -4,3 +4,4 @@
 * *stdout* is messy when there are concurrent downloads
 * Add `dmenu` "GUI" option
     * Modularise the GUI functions while we're at it?
+* Fix delay between finding a video and client picking up the request
