@@ -11,6 +11,7 @@ Dependencies
 
 * `ngrep`
 * `youtube-dl`
+* `mplayer`
 
 ### Optional
 
