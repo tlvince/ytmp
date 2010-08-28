@@ -2,3 +2,5 @@
 * Allow different quality settings for streaming/downloading
 * The "client" appears to be a daemon in itself... daemonise it?
 * *stdout* is messy when there are concurrent downloads
+* Add `dmenu` "GUI" option
+    * Modularise the GUI functions while we're at it?
