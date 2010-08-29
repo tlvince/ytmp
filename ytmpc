@@ -8,9 +8,9 @@ else
 fi
 . $CONFPATH
 
-if [ ! $GUI ]; then echo "GUI not set in $CONFPATH"; error=true; fi
+if [ ! "$GUI" ]; then echo "GUI not set in $CONFPATH"; error=true; fi
 if [ ! ${!DWN[@]} ]; then echo "DWN not set in $CONFPATH"; error=true; fi
-if [ ! $PLAYER ]; then echo "PLAYER not set in $CONFPATH"; error=true; fi
+if [ ! "$PLAYER" ]; then echo "PLAYER not set in $CONFPATH"; error=true; fi
 if [ ! ${!YTQUAL[@]} ]; then echo "YTQUAL not set in $CONFPATH"; error=true; fi
 if [ $error ]; then exit 1; fi
 # http://stackoverflow.com/questions/874389/bash-test-for-a-variable-unset-using-a-function/1469472#1469472
