@@ -3,24 +3,22 @@
 . /etc/rc.conf
 . /etc/rc.d/functions
 
-PID=`pidof -o %PPID /usr/bin/ngrep`
+PID=`pidof -o %PPID /usr/bin/ytmpd`
 case "$1" in
   start)
     stat_busy "Starting ytmpd"
-    if [ -z "$PID" ]; then 
-       /usr/bin/ytmpd &
-    fi
-    if [ ! -z "$PID" -o $? -gt 0 ]; then
-      stat_fail
+    [ -z "$PID" ] && /usr/bin/ytmpd
+    if [ $? -eq 0 ]; then
+	add_daemon ytmpd
+	stat_done
     else
-      add_daemon ytmpd
-      stat_done
+	stat_fail
     fi
     ;;
   stop)
     stat_busy "Stopping ytmpd"
     [ ! -z "$PID" ]  && kill $PID &> /dev/null
-    if [ $? -gt 0 ]; then
+    if [ $? -ne 0 ]; then
       stat_fail
     else
       rm_daemon ytmpd
