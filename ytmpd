@@ -4,9 +4,11 @@ source /etc/ytmp.conf
 
 rm /tmp/ytmpurls 2> /dev/null
 
-ngrep -W byline -qilw 'get' tcp dst port 80 -d wlan0 | egrep  --line-buffered -i "(get\ /watch|GET \/[0-9]* .*)" | sed --unbuffered -e 's/GET \/ HTTP\/1\.1\.//' -e 's/.*\/\([0-9]*\) .*/host=vimeo\nid=\1/g' -e 's/.*=\([_a-zA-Z0-9-]\{11,11\}\)[ &].*/host=youtube\nid=\1/' >> /tmp/ytmpurls
+ngrep -W byline -qil 'get|session' tcp dst port 80 -d wlan0 | egrep  --line-buffered -i "(get\ /watch|GET \/[0-9]* .*|^session_token.*)" | sed --unbuffered -e 's/GET \/ HTTP\/1\.1\.//' -e 's/.*video_id%22%3A%22\([_a-zA-Z0-9-]\{11,11\}\).*/host=youtube\nid=\1/' -e 's/.*\/\([0-9]*\) .*/host=vimeo\nid=\1/g' -e 's/.*=\([_a-zA-Z0-9-]\{11,11\}\)[ &].*/host=youtube\nid=\1/' >> /tmp/ytmpurls
 
 #'-e 's/GET \/ HTTP\/1\.1\.//'' -> get rid of unwanted 'GET / HTTP/1.1.' matches
 #'-e 's/.*\/\([0-9]*\) .*/host=vimeo\nid=\1/g'' -> filter vimeo video ids
 #'-e 's/.*=\([_a-zA-Z0-9-]\{11,11\}\)[ &].*/host=youtube\nid=\1/' -> filter
 #	youtube video ids
+#'-e 's/.*video_id%22%3A%22\([_a-zA-Z0-9-]\{11,11\}\).*/host=youtube\nid=\1/''
+#	-> filter youtube channel video ids
