@@ -16,7 +16,7 @@ isSet() {
 
 OPTS=(GUI PLAYER DWN YTQUAL)
 for i in "${OPTS[@]}"; do
-    validateConfig "$i"
+    isSet "$i"
 done
 
 ytplay() {
