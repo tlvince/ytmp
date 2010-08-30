@@ -1,19 +1,23 @@
 #!/bin/bash
 
-CONFIG="${XDG_CONFIG_HOME:-"$HOME/.config"}/ytmp/"
+
+CONFIG="${XDG_CONFIG_HOME:-"$HOME/.config"}/ytmp"
 if [[ -f "$CONFIG/ytmp.conf" ]]; then
-    CONFPATH="$config/ytmp.conf"
+    CONFPATH="$CONFIG/ytmp.conf"
 else
     CONFPATH="/etc/ytmp.conf"
 fi
-. $CONFPATH
+. "$CONFPATH"
 
-if [ ! "$GUI" ]; then echo "GUI not set in $CONFPATH"; error=true; fi
-if [ ! ${!DWN[@]} ]; then echo "DWN not set in $CONFPATH"; error=true; fi
-if [ ! "$PLAYER" ]; then echo "PLAYER not set in $CONFPATH"; error=true; fi
-if [ ! ${!YTQUAL[@]} ]; then echo "YTQUAL not set in $CONFPATH"; error=true; fi
-if [ $error ]; then exit 1; fi
-# http://stackoverflow.com/questions/874389/bash-test-for-a-variable-unset-using-a-function/1469472#1469472
+
+isSet() {
+    [[ -z ${!1} ]] && echo "$1 is not set in $CONFPATH" && exit 1
+}
+
+OPTS=(GUI PLAYER DWN YTQUAL)
+for i in "${OPTS[@]}"; do
+    validateConfig "$i"
+done
 
 ytplay() {
   echo "[ytmpc] Now playing: ($host) $title"
@@ -42,10 +46,9 @@ ytdlandplay() {
 }
 
 _zenity() {
-# zenity requires ampersand characters to be escaped as &amp;
-  title=`echo $title | sed 's/\&/&amp;/g'`
-  choice=$(zenity --list --checklist --text="$title" --hide-header --column "1" \
-             --column "2" TRUE "View in mplayer" FALSE "Download")
+  title="${title//&/&amp;}" # zenity requires ampersand characters to be escaped
+  choice="$(zenity --list --checklist --text="$title" --hide-header --column "1" \
+              --column "2" TRUE "View in mplayer" FALSE "Download")"
 
   case "$choice" in
     "View in mplayer") ytplay &;;
@@ -91,10 +94,9 @@ parsevimeo() {
 
 lastid=""
 while(true); do
-  if [[ -f /tmp/ytmpurls ]]; then
-    cat /tmp/ytmpurls | tail -n 2 >> /tmp/ytmpvars
+  if [[ -f /tmp/ytmpurls ]]; then  
+    tail -n 2 /tmp/ytmpurls > /tmp/ytmpvars
     source /tmp/ytmpvars
-    rm /tmp/ytmpvars
     if [[ "$id" != "$lastid" ]]; then
       case "$host" in
         "youtube") title="$(youtube-dl -e "http://www.youtube.com/watch?v=""$id")"
