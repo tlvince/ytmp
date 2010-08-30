@@ -3,15 +3,11 @@ ytmp
 
 Automatically play [YouTube] videos with `mplayer` using `ngrep`.
 
-This fork (of [ytmp v4-1][1]) aims to be more maintainable and robust for future
-extensions.
-
 Dependencies
 ------------
 
 * `ngrep`
 * `youtube-dl`
-* `mplayer`
 
 ### Optional
 
