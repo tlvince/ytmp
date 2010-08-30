@@ -1,5 +1,8 @@
 #!/bin/bash
 
+VERBOSE=false
+DEBUG=false
+host=youtube # XXX: hack until multiple hosts works reliably
 
 CONFIG="${XDG_CONFIG_HOME:-"$HOME/.config"}/ytmp"
 if [[ -f "$CONFIG/ytmp.conf" ]]; then
@@ -16,7 +19,7 @@ isSet() {
 
 OPTS=(GUI PLAYER DWN YTQUAL)
 for i in "${OPTS[@]}"; do
-    validateConfig "$i"
+    isSet "$i"
 done
 
 ytplay() {
@@ -27,7 +30,7 @@ ytplay() {
 ytdownload() {
   echo "[ytmpc] Now downloading: ($host) $title"
   case $host in
-    "youtube") youtube-dl $YTQUAL -o "${DWN:-$HOME}/%(stitle)s.%(ext)s" "http://www.youtube.com/watch?v=""$id";;
+    "youtube") youtube-dl -o "${DWN:-$HOME}/%(stitle)s.%(ext)s" "$id";;
     "vimeo") wget -O "${DWN:-$HOME}/$title.flv" "$vidurl";;
   esac
 }
@@ -45,38 +48,42 @@ ytdlandplay() {
   ytplay &
 }
 
+##
+# A generic framework for GUI's that provide a choice from multiple selections.
+#
+# param $1  A choice string. Defaults: "View in mplayer".
+# param $2  A "play" string. Defaults: "View in mplayer".
+# param $3  A "download" string. Defaults: "Download".
+#
+playText="View in mplayer"
+dwnText="Download"
+parseGUIChoice()
+{
+  [[ $2 ]] || set "$1" "$playText"
+  [[ $3 ]] || set "$1" "$2" "$dwnText"
+
+  case "$1" in
+    "$2") ytplay &;;
+    "$3") ytdownload &;;
+    "$2|$3") ytdlandplay &;;
+  esac
+}
+
 _zenity() {
   title="${title//&/&amp;}" # zenity requires ampersand characters to be escaped
-  choice="$(zenity --list --checklist --text="$title" --hide-header --column "1" \
-              --column "2" TRUE "View in mplayer" FALSE "Download")"
-
-  case "$choice" in
-    "View in mplayer") ytplay &;;
-    "Download") ytdownload &;;
-    "View in mplayer|Download") ytdlandplay &;;
-  esac
+  choice=$(zenity --list --checklist --text="$title" --hide-header \
+             --column="1" --column="2" TRUE "$playText" FALSE "$dwnText")
+  parseGUIChoice "$choice"
 }
 
 _kdialog() {
-  choice=$(kdialog --checklist "$title" 1 "View with mplayer (default)" on \
-              2 "Download" off)
-
-  case "$choice" in
-    '"1" ') echo "yup"
-             ytplay &;;
-    '"2" ') ytdownload &;;
-    '"1" "2" ') ytdlandplay &;;
-  esac
+  choice=$(kdialog --checklist "$title" 1 "$playText" on 2 "$dwnText" off)
+  parseGUIChoice "$choice" '"1" ' '"2" '
 }
 
 _dmenu() {
-  choice=$(echo -e "View in mplayer\nDownload" | dmenu -i)
-
-  case "$choice" in
-    "View in mplayer") ytplay &;;
-    "Download") ytdownload &;;
-    "View in mplayer|Download") ytdlandplay &;;
-  esac
+  choice=$(echo -e "$playText\n$dwnText" | dmenu -i)
+  parseGUIChoice "$choice"
 }
 
 parsevimeo() {
@@ -93,14 +100,23 @@ parsevimeo() {
 }
 
 lastid=""
+rm /tmp/ytmpvars 2>/dev/null
 while(true); do
-  if [[ -f /tmp/ytmpurls ]]; then  
-    tail -n 2 /tmp/ytmpurls > /tmp/ytmpvars
-    source /tmp/ytmpvars
+  if [[ -f /tmp/ytmdurls ]]; then  
+    #tail -n 2 /tmp/ytmdurls > /tmp/ytmpvars
+    #source /tmp/ytmpvars
+    id=$(tail -n 1 /tmp/ytmdurls)
+    host=youtube
     if [[ "$id" != "$lastid" ]]; then
       case "$host" in
-        "youtube") title="$(youtube-dl -e "http://www.youtube.com/watch?v=""$id")"
-                   vidurl="$(youtube-dl $YTQUAL -g "http://www.youtube.com/watch?v=""$id")";;
+        "youtube")
+          $VERBOSE && echo "[ytmpc] (Youtube) video found. Getting title..."
+          title="$(youtube-dl -e -- "$id")"
+          $DEBUG && echo "[debug] title = $title"
+          $VERBOSE && echo "[ytmpc] (Youtube) Getting video URL..."
+          vidurl="$(youtube-dl --max-quality="$YTQUAL" -g -- "$id")"
+          $DEBUG && echo "[debug] vidurl = $vidurl"
+        ;;
         "vimeo") parsevimeo;; 
       esac
       case "$GUI" in
