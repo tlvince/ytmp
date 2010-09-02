@@ -2,7 +2,7 @@
 
 . /usr/lib/tlvince/logging.sh
 
-VERBOSE=false
+VERBOSE=true
 
 CONFIG="${XDG_CONFIG_HOME:-"$HOME/.config"}/ytmp"
 if [[ -f "$CONFIG/ytmp.conf" ]]; then
@@ -104,6 +104,7 @@ parseVimeo() {
 }
 
 lastid=""
+$VERBOSE && info "Waiting for download links..."
 while(true); do
   if [[ -f /tmp/ytmpurls ]]; then  
     tail -n 2 /tmp/ytmpurls > /tmp/ytmpvars
