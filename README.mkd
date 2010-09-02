@@ -1,7 +1,13 @@
 ytmp
 ====
 
-Automatically play [YouTube] videos with `mplayer` using `ngrep`.
+Play videos from video hosting services without the need of Flash.
+
+Supported sites
+---------------
+
+* YouTube
+* Vimeo
 
 Dependencies
 ------------
@@ -15,5 +21,27 @@ Dependencies
 * `kdialog`: for KDE GUI support
 * `dmenu`: for dmenu GUI support
 
-  [1]: http://aur.archlinux.org/packages.php?ID=40172
-  [YouTube]: http://www.youtube.com/
+Usage
+-----
+
+(Note: the following is specific to Arch Linux users)
+
+1. Configure `ytmp.conf`:
+
+* Specify your network interface (usually *eth0* or *wlan0*)
+* Choose a GUI
+* Specify the command of your favourite media player
+
+* Optionally set the download path and YouTube quality setting
+
+2. Start the `ngrep` wrapper as root:
+
+    $ sudo /etc/rc.d/ytmpd start
+
+3. Launch the `ytmpc` client:
+
+    $ /usr/bin/ytmpc
+
+4. Open a video (from the list of supported sites) in your browser
+
+5. Video automatically plays in your chosen media player
