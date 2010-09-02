@@ -15,7 +15,7 @@
 #
 info()
 {
-    echo "$(basename $0): $1"
+    echo "${0##*/}: $1"     # Bash-ism: equivalent to basname
     [[ $LOG ]] && echo "$(date +"%F %T") :: $1" >> "$LOG"
 }
 
