@@ -1,8 +1,6 @@
 #!/bin/bash
 
 VERBOSE=false
-DEBUG=false
-host=youtube # XXX: hack until multiple hosts works reliably
 
 CONFIG="${XDG_CONFIG_HOME:-"$HOME/.config"}/ytmp"
 if [[ -f "$CONFIG/ytmp.conf" ]]; then
@@ -17,10 +15,8 @@ isSet() {
     [[ -z ${!1} ]] && echo "$1 is not set in $CONFPATH" && exit 1
 }
 
-OPTS=(GUI PLAYER DWN YTQUAL)
-for i in "${OPTS[@]}"; do
-    isSet "$i"
-done
+isSet "GUI"
+isSet "PLAYER"
 
 ytplay() {
   echo "[ytmpc] Now playing: ($host) $title"
@@ -100,22 +96,17 @@ parsevimeo() {
 }
 
 lastid=""
-rm /tmp/ytmpvars 2>/dev/null
 while(true); do
-  if [[ -f /tmp/ytmdurls ]]; then  
-    #tail -n 2 /tmp/ytmdurls > /tmp/ytmpvars
-    #source /tmp/ytmpvars
-    id=$(tail -n 1 /tmp/ytmdurls)
-    host=youtube
+  if [[ -f /tmp/ytmpurls ]]; then  
+    tail -n 2 /tmp/ytmpurls > /tmp/ytmpvars
+    . /tmp/ytmpvars
     if [[ "$id" != "$lastid" ]]; then
       case "$host" in
         "youtube")
-          $VERBOSE && echo "[ytmpc] (Youtube) video found. Getting title..."
+          $VERBOSE && echo "[ytmpc] (youtube) video found. Getting title..."
           title="$(youtube-dl -e -- "$id")"
-          $DEBUG && echo "[debug] title = $title"
-          $VERBOSE && echo "[ytmpc] (Youtube) Getting video URL..."
+          $VERBOSE && echo "[ytmpc] (youtube) Getting video URL..."
           vidurl="$(youtube-dl --max-quality="$YTQUAL" -g -- "$id")"
-          $DEBUG && echo "[debug] vidurl = $vidurl"
         ;;
         "vimeo") parsevimeo;; 
       esac
