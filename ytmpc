@@ -18,6 +18,8 @@ isSet() {
 isSet "GUI"
 isSet "PLAYER"
 
+pidof /usr/bin/ngrep || echo "[ytmpc] error: is ytmpd running?" && exit 1
+
 ytplay() {
   echo "[ytmpc] Now playing: ($host) $title"
   $PLAYER "$vidurl" > /dev/null 2>&1
