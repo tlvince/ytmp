@@ -47,9 +47,9 @@ ytdlandplay() {
 ##
 # A generic framework for GUI's that provide a choice from multiple selections.
 #
-# param $1  A choice string. Defaults: "View in mplayer".
-# param $2  A "play" string. Defaults: "View in mplayer".
-# param $3  A "download" string. Defaults: "Download".
+# param $1  A choice string.
+# param $2  A "play" string. Default: "View in mplayer".
+# param $3  A "download" string. Default: "Download".
 #
 playText="View in mplayer"
 dwnText="Download"
@@ -82,16 +82,20 @@ _dmenu() {
   parseGUIChoice "$choice"
 }
 
-parsevimeo() {
-# based on video-dl by Vitaly Minko
-# http://ossguy.com/?p=172
-  local video_xml=$(wget -q -O - "http://www.vimeo.com/moogaloop/load/clip:$id") 
-  local signature=$(echo $video_xml | \
-    sed -e 's/^.*<request_signature>\([^<]*\)<.*$/\1/g')
-  local signature_expires=$(echo $video_xml | \
-    sed -e 's/^.*<request_signature_expires>\([^<]*\)<.*$/\1/g')
-  title=$(echo $video_xml | \
-    sed -e 's/^.*locked> <video> <caption>\([^<]*\)<.*$/\1/')
+##
+# Vimeo support.
+#
+# Based on video-dl by Vitaly Minko <http://ossguy.com/?p=172>
+#
+parseVimeo() {
+  local video_xml signature signature_expires
+
+  video_xml=$(wget -q -O - "http://www.vimeo.com/moogaloop/load/clip:$id") 
+  signature=$(echo $video_xml | sed 's/^.*<request_signature>\([^<]*\)<.*$/\1/g')
+  signature_expires=$(echo $video_xml | \
+                        sed -e 's/^.*<request_signature_expires>\([^<]*\)<.*$/\1/g')
+
+  title=$(echo $video_xml | sed 's/^.*locked> <video> <caption>\([^<]*\)<.*$/\1/')
   vidurl="http://www.vimeo.com/moogaloop/play/clip:$id/$signature/$signature_expires/?q=sd"
 }
 
@@ -108,7 +112,7 @@ while(true); do
           $VERBOSE && echo "[ytmpc] (youtube) Getting video URL..."
           vidurl="$(youtube-dl --max-quality="$YTQUAL" -g -- "$id")"
         ;;
-        "vimeo") parsevimeo;; 
+        "vimeo") parseVimeo;; 
       esac
       case "$GUI" in
         "none") ytplay &;;
