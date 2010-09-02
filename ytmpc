@@ -1,6 +1,6 @@
 #!/bin/bash
 
-. lib/logging.sh
+. /usr/lib/tlvince/logging.sh
 
 VERBOSE=false
 
