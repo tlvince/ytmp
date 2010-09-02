@@ -1,5 +1,7 @@
 #!/bin/bash
 
+. lib/logging.sh
+
 VERBOSE=false
 
 CONFIG="${XDG_CONFIG_HOME:-"$HOME/.config"}/ytmp"
@@ -12,21 +14,21 @@ fi
 
 
 isSet() {
-    [[ -z ${!1} ]] && echo "$1 is not set in $CONFPATH" && exit 1
+    [[ -z ${!1} ]] && die "$1 is not set in $CONFPATH"
 }
 
 isSet "GUI"
 isSet "PLAYER"
 
-pidof /usr/bin/ngrep || echo "[ytmpc] error: is ytmpd running?" && exit 1
+pidof /usr/bin/ngrep > /dev/null || die "is ytmpd running?"
 
 ytplay() {
-  echo "[ytmpc] Now playing: ($host) $title"
+  info "Now playing: ($host) $title"
   $PLAYER "$vidurl" > /dev/null 2>&1
 }
 
 ytdownload() {
-  echo "[ytmpc] Now downloading: ($host) $title"
+  info "Now downloading: ($host) $title"
   case $host in
     "youtube") youtube-dl -o "${DWN:-$HOME}/%(stitle)s.%(ext)s" "$id";;
     "vimeo") wget -O "${DWN:-$HOME}/$title.flv" "$vidurl";;
@@ -109,9 +111,9 @@ while(true); do
     if [[ "$id" != "$lastid" ]]; then
       case "$host" in
         "youtube")
-          $VERBOSE && echo "[ytmpc] (youtube) video found. Getting title..."
+          $VERBOSE && info "(youtube) video found. Getting title..."
           title="$(youtube-dl -e -- "$id")"
-          $VERBOSE && echo "[ytmpc] (youtube) Getting video URL..."
+          $VERBOSE && info "(youtube) Getting video URL..."
           vidurl="$(youtube-dl --max-quality="$YTQUAL" -g -- "$id")"
         ;;
         "vimeo") parseVimeo;; 
