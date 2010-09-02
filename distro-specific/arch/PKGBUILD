@@ -38,4 +38,5 @@ package() {
   install -Dm644 ytmp.conf "$pkgdir"/etc/ytmp.conf
   install -m755 ytmpc "$pkgdir"/usr/bin/ytmpc
   install -Dm744 distro-specific/arch/ytmpd_init "$pkgdir"/etc/rc.d/ytmpd
+  install -Dm644 lib/logging.sh "$pkgdir"/usr/lib/tlvince/logging.sh
 }
