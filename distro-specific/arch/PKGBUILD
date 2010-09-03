@@ -30,7 +30,7 @@ build() {
 
   rm -rf "$srcdir/$_gitname-build"
   git clone "$srcdir/$_gitname" "$srcdir/$_gitname-build"
-} 
+}
 
 package() {
   cd "$srcdir/$_gitname-build"
@@ -39,4 +39,5 @@ package() {
   install -m755 ytmpc "$pkgdir"/usr/bin/ytmpc
   install -Dm744 distro-specific/arch/ytmpd_init "$pkgdir"/etc/rc.d/ytmpd
   install -Dm644 lib/logging.sh "$pkgdir"/usr/lib/tlvince/logging.sh
+  install -Dm644 lib/getConfig.sh "$pkgdir"/usr/lib/tlvince/getConfig.sh
 }

@@ -1,17 +1,10 @@
 #!/bin/bash
 
 . /usr/lib/tlvince/logging.sh
+. /usr/lib/tlvince/getConfig.sh
+. $(getConfig ytmp)
 
 VERBOSE=true
-
-CONFIG="${XDG_CONFIG_HOME:-"$HOME/.config"}/ytmp"
-if [[ -f "$CONFIG/ytmp.conf" ]]; then
-    CONFPATH="$CONFIG/ytmp.conf"
-else
-    CONFPATH="/etc/ytmp.conf"
-fi
-. "$CONFPATH"
-
 
 isSet() {
     [[ -z ${!1} ]] && die "$1 is not set in $CONFPATH"
@@ -41,7 +34,7 @@ ytdlandplay() {
                ytdownload | tee "$log" &
                vidurl="$(grep -F Destination "$log" | awk '{print $3}')";;
     "vimeo") ytdownload &
-             vidurl="${DWN:-$HOME}/$title.flv" 
+             vidurl="${DWN:-$HOME}/$title.flv"
   esac
   sleep 3
   while ! [ -f "$vidurl" ] ; do sleep 3; done
@@ -94,7 +87,7 @@ _dmenu() {
 parseVimeo() {
   local video_xml signature signature_expires
 
-  video_xml=$(wget -q -O - "http://www.vimeo.com/moogaloop/load/clip:$id") 
+  video_xml=$(wget -q -O - "http://www.vimeo.com/moogaloop/load/clip:$id")
   signature=$(echo $video_xml | sed 's/^.*<request_signature>\([^<]*\)<.*$/\1/g')
   signature_expires=$(echo $video_xml | \
                         sed -e 's/^.*<request_signature_expires>\([^<]*\)<.*$/\1/g')
@@ -106,7 +99,7 @@ parseVimeo() {
 lastid=""
 $VERBOSE && info "Waiting for download links..."
 while(true); do
-  if [[ -f /tmp/ytmpurls ]]; then  
+  if [[ -f /tmp/ytmpurls ]]; then
     tail -n 2 /tmp/ytmpurls > /tmp/ytmpvars
     . /tmp/ytmpvars
     if [[ "$id" != "$lastid" ]]; then
@@ -117,7 +110,7 @@ while(true); do
           $VERBOSE && info "(youtube) Getting video URL..."
           vidurl="$(youtube-dl --max-quality="$YTQUAL" -g -- "$id")"
         ;;
-        "vimeo") parseVimeo;; 
+        "vimeo") parseVimeo;;
       esac
       case "$GUI" in
         "none") ytplay &;;
