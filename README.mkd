@@ -48,7 +48,7 @@ Usage
 
 ### General usage
 
-(Note: the following is targeted to Arch Linux users)
+(Note: the following is targeted towards Arch Linux users)
 
 1. Start the `ngrep` wrapper as root:
 
