@@ -3,6 +3,19 @@ ytmp
 
 Play videos from video hosting services without the need of Flash.
 
+Sure, there are a number of alternative methods (such as bookmarklets, userJS,
+command line tools and complete desktop clients) that achieve the same goal,
+but `ytmp` does it differently.
+
+`ytmp` includes a daemon, utilising `ngrep` to watch for traffic destined to
+one of the supported sites (below). The `ytmp` client then receives a
+(formatted) link to the video, which is passed to `youtube-dl` for downloading
+or streaming in your favourite media player.
+
+This approach therefore provides an interface to `youtube-dl`, requiring no user
+intervention, while remaining browser agnostic: just visit a video hosting site
+as normal and watch the video without Flash!
+
 Supported sites
 ---------------
 
@@ -30,19 +43,18 @@ Usage
 
 1. Configure `ytmp.conf`:
 
-* Specify your network interface (usually *eth0* or *wlan0*)
-* Choose a GUI
-* Specify the command of your favourite media player
-
-* Optionally set the download path and YouTube quality setting
+  * Specify your network interface (usually *eth0* or *wlan0*)
+  * Choose a GUI
+  * Specify the command of your favourite media player
+  * Optionally set the download path and YouTube quality setting
 
 2. Start the `ngrep` wrapper as root:
 
-    $ sudo /etc/rc.d/ytmpd start
+        $ sudo /etc/rc.d/ytmpd start
 
 3. Launch the `ytmpc` client:
 
-    $ /usr/bin/ytmpc
+        $ /usr/bin/ytmpc
 
 4. Open a video (from the list of supported sites) in your browser
 
