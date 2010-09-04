@@ -1,6 +1,6 @@
 #!/bin/sh
 
-. /usr/lib/tlvince/getConfig.sh
+. /usr/lib/tlvince/lib-bash/getConfig.sh
 . $(getConfig ytmp)
 
 [ $INTERFACE ] || {

@@ -1,7 +1,7 @@
 #!/bin/bash
 
-. /usr/lib/tlvince/logging.sh
-. /usr/lib/tlvince/getConfig.sh
+. /usr/lib/tlvince/lib-bash/logging.sh
+. /usr/lib/tlvince/lib-bash/getConfig.sh
 . $(getConfig ytmp)
 
 VERBOSE=true
