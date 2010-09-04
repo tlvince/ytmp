@@ -41,12 +41,14 @@ Usage
 
 (Note: the following is targeted to Arch Linux users)
 
-### 0. Configuring `ytmp.conf`
+### Configuring ytmp.conf
 
 * Specify your network interface (usually *eth0* or *wlan0*)
 * Choose a GUI
 * Specify the command of your favourite media player
 * Optionally set the download path and YouTube quality setting
+
+### General usage
 
 1. Start the `ngrep` wrapper as root:
 
