@@ -33,11 +33,11 @@ build() {
 }
 
 package() {
+  mkdir -p "$pkgdir"/usr/lib/tlvince
   cd "$srcdir/$_gitname-build"
   install -Dm744 ytmpd "$pkgdir"/usr/bin/ytmpd
   install -Dm644 ytmp.conf "$pkgdir"/etc/ytmp.conf
   install -m755 ytmpc "$pkgdir"/usr/bin/ytmpc
   install -Dm744 distro-specific/arch/ytmpd_init "$pkgdir"/etc/rc.d/ytmpd
-  install -Dm644 lib/logging.sh "$pkgdir"/usr/lib/tlvince/logging.sh
-  install -Dm644 lib/getConfig.sh "$pkgdir"/usr/lib/tlvince/getConfig.sh
+  install -Dm644 lib/* "$pkgdir"/usr/lib/tlvince/
 }
