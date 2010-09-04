@@ -39,8 +39,6 @@ Dependencies
 Usage
 -----
 
-(Note: the following is targeted to Arch Linux users)
-
 ### Configuring ytmp.conf
 
 * Specify your network interface (usually *eth0* or *wlan0*)
@@ -49,6 +47,8 @@ Usage
 * Optionally set the download path and YouTube quality setting
 
 ### General usage
+
+(Note: the following is targeted to Arch Linux users)
 
 1. Start the `ngrep` wrapper as root:
 
