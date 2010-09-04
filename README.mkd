@@ -41,21 +41,21 @@ Usage
 
 (Note: the following is targeted to Arch Linux users)
 
-1. Configure `ytmp.conf`:
+### 0. Configuring `ytmp.conf`
 
-  * Specify your network interface (usually *eth0* or *wlan0*)
-  * Choose a GUI
-  * Specify the command of your favourite media player
-  * Optionally set the download path and YouTube quality setting
+* Specify your network interface (usually *eth0* or *wlan0*)
+* Choose a GUI
+* Specify the command of your favourite media player
+* Optionally set the download path and YouTube quality setting
 
-2. Start the `ngrep` wrapper as root:
+1. Start the `ngrep` wrapper as root:
 
         $ sudo /etc/rc.d/ytmpd start
 
-3. Launch the `ytmpc` client:
+2. Launch the `ytmpc` client:
 
         $ /usr/bin/ytmpc
 
-4. Open a video (from the list of supported sites) in your browser
+3. Open a video (from the list of supported sites) in your browser
 
-5. Video automatically plays in your chosen media player
+4. Video automatically plays in your chosen media player
