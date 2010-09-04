@@ -1,6 +1,10 @@
 * Add option to download by default (rather than play)
 * Allow different quality settings for streaming/downloading
+* The "client" appears to be a daemon in itself... daemonise it?
+ -> I see no reason for that. ytmpd is a daemon because ngrep requires root privileges. ytmpc can be autostarted with .bashrc/xdg-autostart etc. upon login
 * *stdout* is messy when there are concurrent downloads
+* Add `dmenu` "GUI" option
+    * Modularise the GUI functions while we're at it?
 * Fix delay between finding a video and client picking up the request
 * Add a play queue (download in the background)
 * Add support for metacafe.com, google video, photobucket, yahoo video and dailymotion (they are already supported by youtube-dl)
