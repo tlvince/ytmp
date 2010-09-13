@@ -2,7 +2,9 @@
 
 . /usr/lib/tlvince/logging.sh
 . /usr/lib/tlvince/getConfig.sh
-. $(getConfig ytmp)
+
+CONFPATH="$(getConfig ytmp)"
+. "$CONFPATH"
 
 VERBOSE=true
 
