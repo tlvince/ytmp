@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 
 . /usr/lib/tlvince/logging.sh
 . /usr/lib/tlvince/getConfig.sh
