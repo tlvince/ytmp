@@ -1,3 +1,7 @@
+**Note**: superseded by [sniffy][] (I no longer maitain `ytmp`).
+
+  [sniffy]: https://github.com/tlvince/sniffy
+
 ytmp
 ====
 
