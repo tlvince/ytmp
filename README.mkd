@@ -1,4 +1,4 @@
-**Note**: superseded by [sniffy][] (I no longer maitain `ytmp`).
+**Note**: superseded by [sniffy][] (I no longer maintain `ytmp`).
 
   [sniffy]: https://github.com/tlvince/sniffy
 
